@@ -1,2 +1,2 @@
 # Loominescence
-A 2.5-D Metroidvania game!
+A 2.5D fantasy exploration/crafting game set in a dark cave only illuminated by biofluorescent flora and fungi. The player must explore the cave, manage their inventory, and craft potions with a variety of different effects to dim the lights in the cave and calm the turbulent wisp residents. This project is scoped at only making the starter area of the game and a boss fight against the ancient bear Morro, who the wisps took shelter in, but is planned to have a greater amount of content and story added in future projects.
