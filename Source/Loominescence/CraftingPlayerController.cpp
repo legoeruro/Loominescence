@@ -72,15 +72,13 @@ void ACraftingPlayerController::Tick(float DeltaSeconds)
 void ACraftingPlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
-
-    if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(InputComponent))
-    {
-        if (GrabAction)
-        {
-            Input->BindAction(GrabAction, ETriggerEvent::Started, this, &ACraftingPlayerController::HandleBeginGrab);
-            Input->BindAction(GrabAction, ETriggerEvent::Completed, this, &ACraftingPlayerController::HandleEndGrab);
-        }
-    }
+    UE_LOG(LogTemp, Log, TEXT("Start bind"));
+    UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(InputComponent);
+    // Check removed to test if there is error sometimes or not
+    UE_LOG(LogTemp, Log, TEXT("Binding actions!"));
+    Input->BindAction(GrabAction, ETriggerEvent::Started, this, &ACraftingPlayerController::HandleBeginGrab);
+    Input->BindAction(GrabAction, ETriggerEvent::Completed, this, &ACraftingPlayerController::HandleEndGrab);
+    // Input->BindAction(MouseMoveAction, ETriggerEvent::Triggered, this, &ACraftingPlayerController::HandleMouseMove);
 }
 
 
