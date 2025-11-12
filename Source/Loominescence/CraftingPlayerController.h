@@ -29,6 +29,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     class UInputAction* GrabAction;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    class UInputAction* GoToPlatformLevelAction;
     
     // Hand Reference
     UPROPERTY(EditAnywhere, Category = "Hand")
@@ -60,6 +63,7 @@ private:
     void HandleBeginGrab();
     void HandleEndGrab();
     void HandleMouseMove();
+    void HandleGoToNewLevel();
     void UpdateHandPosition();
     void UpdateCameraOffset(float DeltaSeconds);
 };

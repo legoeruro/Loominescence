@@ -46,10 +46,6 @@ void ACraftingPlayerController::BeginPlay()
     TArray<AActor*> Cameras;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
     int cameraCount = Cameras.Num();
-    
-    if(GEngine)
-        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Running with cam"));
-
     if (Cameras.Num() > 0)
     {
         SetViewTargetWithBlend(Cameras[0]);
@@ -75,8 +71,16 @@ void ACraftingPlayerController::SetupInputComponent()
     // This sometimes does not work (unless live coding is triggered at least once)
     Input->BindAction(GrabAction, ETriggerEvent::Started, this, &ACraftingPlayerController::HandleBeginGrab);
     Input->BindAction(GrabAction, ETriggerEvent::Completed, this, &ACraftingPlayerController::HandleEndGrab);
+    Input->BindAction(GoToPlatformLevelAction, ETriggerEvent::Triggered, this, &ACraftingPlayerController::HandleGoToNewLevel);
 }
 
+void ACraftingPlayerController::HandleGoToNewLevel()
+{
+    UE_LOG(LogTemp, Log, TEXT("Go to new level"));
+
+    //TODO: change name
+    UGameplayStatics::OpenLevel(this, FName("Greybox"));
+}
 
 void ACraftingPlayerController::HandleBeginGrab()
 {

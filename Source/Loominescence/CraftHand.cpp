@@ -42,8 +42,6 @@ void ACraftHand::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Oth
     UE_LOG(LogTemp, Warning, TEXT("Overlapping with: %s (Class: %s)"),
         *OtherActor->GetName(),
         *OtherActor->GetClass()->GetName());
-    if(GEngine)
-        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlapped"));
 
 
     // If grabbing an object already --> do not execute overlap code
@@ -62,8 +60,6 @@ void ACraftHand::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Oth
 void ACraftHand::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                               UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-    if(GEngine)
-        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Stop Overlap"));
     
     if (GrabbedActor) return;
     

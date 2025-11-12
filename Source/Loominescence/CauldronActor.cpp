@@ -36,9 +36,6 @@ void ACauldronActor::BeginPlay()
         WaterMesh->SetMaterial(0, WaterMaterial);
 
         UE_LOG(LogTemp, Warning, TEXT("Dynamic Material Created: %s"), *WaterMaterial->GetName());
-        if(GEngine)
-            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Dynamic material created"));
-
     }
 }
 
