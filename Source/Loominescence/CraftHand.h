@@ -12,9 +12,21 @@ class LOOMINESCENCE_API ACraftHand : public AActor
 
 public:
 	ACraftHand();
+	
+	UFUNCTION()
+	void BeginGrab();
+	
+	UFUNCTION()
+	void EndGrab();
 
 protected:
+	// --- Settings ---
+	UPROPERTY(EditAnywhere, Category = "Hand")
+	float ObjectZPLane = 200.f;
+	
 	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaSeconds) override;
 
 	// Properties from blueprint
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="Hand")
@@ -38,5 +50,4 @@ protected:
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 					  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	
 };

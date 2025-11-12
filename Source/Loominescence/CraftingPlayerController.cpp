@@ -20,7 +20,6 @@ ACraftingPlayerController::ACraftingPlayerController()
 }
 
 
-// is this necessary?
 void ACraftingPlayerController::BeginPlay()
 {
     Super::BeginPlay();
@@ -70,20 +69,37 @@ void ACraftingPlayerController::Tick(float DeltaSeconds)
     
 }
 
-void ACraftingPlayerController::SetupInputMapping()
+void ACraftingPlayerController::SetupInputComponent()
 {
+    Super::SetupInputComponent();
+
     if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(InputComponent))
     {
         if (GrabAction)
         {
-            Input->BindAction(GrabAction, ETriggerEvent::Started, this, &ACraftingPlayerController::HandleGrab);
+            Input->BindAction(GrabAction, ETriggerEvent::Started, this, &ACraftingPlayerController::HandleBeginGrab);
+            Input->BindAction(GrabAction, ETriggerEvent::Completed, this, &ACraftingPlayerController::HandleEndGrab);
         }
     }
 }
 
-void ACraftingPlayerController::HandleGrab()
+
+void ACraftingPlayerController::HandleBeginGrab()
 {
     UE_LOG(LogTemp, Log, TEXT("Grab triggered!"));
+    if(GEngine)
+        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Grabbed mouse"));
+
+    HandActor->BeginGrab();
+}
+
+void ACraftingPlayerController::HandleEndGrab()
+{
+    UE_LOG(LogTemp, Log, TEXT("Grab triggered!"));
+    if(GEngine)
+        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Ungrabbed mouse"));
+
+    HandActor->EndGrab();
 }
 
 void ACraftingPlayerController::HandleMouseMove()

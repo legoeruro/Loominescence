@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CraftHand.h"
 #include "GameFramework/PlayerController.h"
 #include "CraftingPlayerController.generated.h"
 
@@ -13,6 +14,7 @@ class LOOMINESCENCE_API ACraftingPlayerController : public APlayerController
 
 public:
     ACraftingPlayerController();
+    bool bHoldingGrab = false;
 
 protected:
     virtual void BeginPlay() override;
@@ -27,13 +29,13 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     class UInputAction* GrabAction;
-
+    
     // --- Hand Reference ---
     UPROPERTY(EditAnywhere, Category = "Hand")
     TSubclassOf<class AActor> HandActorClass;
 
     UPROPERTY()
-    AActor* HandActor;
+    ACraftHand* HandActor;
 
     UPROPERTY()
     AActor* LevelCamera;
@@ -54,8 +56,9 @@ protected:
     float CameraOffsetFactor = 0.05f;
 
 private:
-    void SetupInputMapping();
-    void HandleGrab();
+    virtual void SetupInputComponent() override;
+    void HandleBeginGrab();
+    void HandleEndGrab();
     void HandleMouseMove();
     void UpdateHandPosition();
     void UpdateCameraOffset(float DeltaSeconds);
