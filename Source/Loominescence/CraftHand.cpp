@@ -1,5 +1,7 @@
 // CraftHand.cpp
 #include "CraftHand.h"
+
+#include "CauldronActor.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 
@@ -22,13 +24,14 @@ void ACraftHand::BeginPlay()
     CollisionSphere->OnComponentEndOverlap.AddDynamic(this, &ACraftHand::OnEndOverlap);
 }
 
+// TODO: change it so that this works
 void ChangeHighlightActor(const AActor* GrabbedActor, bool IsHighlighted)
 {
     if (!GrabbedActor) return;
     UPrimitiveComponent* MeshComp = Cast<UPrimitiveComponent>(GrabbedActor->GetComponentByClass(UPrimitiveComponent::StaticClass()));
     if (MeshComp)
     {
-        MeshComp->SetRenderCustomDepth(IsHighlighted); // enables outline
+        MeshComp->SetRenderCustomDepth(IsHighlighted);
     }
 }
 
@@ -36,7 +39,9 @@ void ACraftHand::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Oth
                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
                                 bool bFromSweep, const FHitResult& SweepResult)
 {
-    UE_LOG(LogTemp, Log, TEXT("Hand overlapping with: %s"), *OtherActor->GetName());
+    UE_LOG(LogTemp, Warning, TEXT("Overlapping with: %s (Class: %s)"),
+        *OtherActor->GetName(),
+        *OtherActor->GetClass()->GetName());
     if(GEngine)
         GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Overlapped"));
 
@@ -57,16 +62,13 @@ void ACraftHand::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Oth
 void ACraftHand::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                               UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+    if(GEngine)
+        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Stop Overlap"));
+    
     if (GrabbedActor) return;
     
-    if (OtherActor && OtherActor != this)
-    {
-        OverlappingActor = nullptr;
-        
-        UE_LOG(LogTemp, Log, TEXT("Hand stopped overlapping with: %s"), *OtherActor->GetName());
-
-        ChangeHighlightActor(OverlappingActor, false);
-    }
+    OverlappingActor = nullptr;
+    ChangeHighlightActor(OverlappingActor, false);
 }
 
 void ToggleActorPhysics(const AActor* GrabbedActor, bool IsPhysicsOn)
@@ -82,6 +84,18 @@ void ACraftHand::BeginGrab()
 {
     if (GrabbedActor) return;
     if (!OverlappingActor) return;
+    
+    UE_LOG(LogTemp, Warning, TEXT("Grabbing: %s (Class: %s)"),
+*OverlappingActor->GetName(),
+*OverlappingActor->GetClass()->GetName());
+    // Special case: grab onto the pot
+    if (ACauldronActor* Cauldron = Cast<ACauldronActor>(OverlappingActor))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("This is a cauldron"));
+
+        Cauldron->OnInteract();
+        return;
+    }
 
     GrabbedActor = OverlappingActor;
     ToggleActorPhysics(GrabbedActor, false);
@@ -99,10 +113,9 @@ void ACraftHand::Tick(float DeltaSeconds)
     {
         GrabbedActor = OverlappingActor;
 
-        // Get current location
         FVector CurrentLoc = GrabbedActor->GetActorLocation();
         FVector TargetLoc = this->GetActorLocation();
-        TargetLoc.Z = ObjectZPLane; // lift to z = 2 meters, Unreal units = cm
+        TargetLoc.Z = ObjectZPLane;
 
         // Smoothly interpolate
         FVector NewLoc = FMath::VInterpTo(CurrentLoc, TargetLoc, DeltaSeconds, 5.f); // 5.f = speed

@@ -20,7 +20,7 @@ protected:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
 
-    // --- Input Mapping ---
+    // Input Mapping
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     class UInputMappingContext* CraftingMappingContext;
 
@@ -30,7 +30,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     class UInputAction* GrabAction;
     
-    // --- Hand Reference ---
+    // Hand Reference
     UPROPERTY(EditAnywhere, Category = "Hand")
     TSubclassOf<class AActor> HandActorClass;
 
@@ -42,7 +42,7 @@ protected:
 
     FVector LastMouseLocation = FVector::ZeroVector;
 
-    // --- Settings ---
+    // Settings
     UPROPERTY(EditAnywhere, Category = "Hand")
     float HandZPlane = 100.f;
 

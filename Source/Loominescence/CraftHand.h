@@ -20,7 +20,7 @@ public:
 	void EndGrab();
 
 protected:
-	// --- Settings ---
+	// Settings
 	UPROPERTY(EditAnywhere, Category = "Hand")
 	float ObjectZPLane = 200.f;
 	

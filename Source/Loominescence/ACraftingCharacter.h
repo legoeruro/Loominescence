@@ -10,6 +10,7 @@ class LOOMINESCENCE_API ACraftingCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
+	//TODO: consider removing
 	ACraftingCharacter();
 
 	UFUNCTION()

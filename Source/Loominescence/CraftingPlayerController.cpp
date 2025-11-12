@@ -49,12 +49,10 @@ void ACraftingPlayerController::BeginPlay()
     
     if(GEngine)
         GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Running with cam"));
-    UE_LOG(LogTemp, Log, TEXT("Camera count is: %d"), cameraCount);
 
     if (Cameras.Num() > 0)
     {
         SetViewTargetWithBlend(Cameras[0]);
-        UE_LOG(LogTemp, Log, TEXT("Camera set to %s"), *Cameras[0]->GetName());
         LevelCamera = Cast<ACameraActor>(Cameras[0]);
     }
 }
@@ -72,37 +70,29 @@ void ACraftingPlayerController::Tick(float DeltaSeconds)
 void ACraftingPlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
-    UE_LOG(LogTemp, Log, TEXT("Start bind"));
     UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(InputComponent);
-    // Check removed to test if there is error sometimes or not
-    UE_LOG(LogTemp, Log, TEXT("Binding actions!"));
+
+    // This sometimes does not work (unless live coding is triggered at least once)
     Input->BindAction(GrabAction, ETriggerEvent::Started, this, &ACraftingPlayerController::HandleBeginGrab);
     Input->BindAction(GrabAction, ETriggerEvent::Completed, this, &ACraftingPlayerController::HandleEndGrab);
-    // Input->BindAction(MouseMoveAction, ETriggerEvent::Triggered, this, &ACraftingPlayerController::HandleMouseMove);
 }
 
 
 void ACraftingPlayerController::HandleBeginGrab()
 {
-    UE_LOG(LogTemp, Log, TEXT("Grab triggered!"));
-    if(GEngine)
-        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Grabbed mouse"));
-
+    UE_LOG(LogTemp, Log, TEXT("Grab triggered"));
     HandActor->BeginGrab();
 }
 
 void ACraftingPlayerController::HandleEndGrab()
 {
-    UE_LOG(LogTemp, Log, TEXT("Grab triggered!"));
-    if(GEngine)
-        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Ungrabbed mouse"));
-
+    UE_LOG(LogTemp, Log, TEXT("Grab released"));
     HandActor->EndGrab();
 }
 
 void ACraftingPlayerController::HandleMouseMove()
 {
-    UE_LOG(LogTemp, Log, TEXT("Mouse move triggered!"));
+    UE_LOG(LogTemp, Log, TEXT("Mouse move triggered"));
 }
 
 void ACraftingPlayerController::UpdateHandPosition()
