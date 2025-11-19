@@ -102,22 +102,22 @@ void ACauldronActor::OnInteract()
 
         // Spawn new ingredient actor
         // TODO: fix this
-        AIngredientActor* NewIngredient =
-            World->SpawnActorDeferred<AIngredientActor>(
-                IngredientClass, FTransform(FRotator::ZeroRotator, SpawnLoc));
-        if (NewIngredient)
-        {
-            UGameplayStatics::FinishSpawningActor(NewIngredient, FTransform(FRotator::ZeroRotator, SpawnLoc));
-            UE_LOG(LogTemp, Warning, TEXT("Spawned via deferred: %s"), *NewIngredient->GetName());
-        }
-
-        UE_LOG(LogTemp, Warning, TEXT("ejecting ingredient 2"));
-
-        if (!NewIngredient)
-        {
-        UE_LOG(LogTemp, Warning, TEXT("Error in creation"));
-        }
-        EjectAgent(NewIngredient);
+        // AIngredientActor* NewIngredient =
+        //     World->SpawnActorDeferred<AIngredientActor>(
+        //         IngredientClass, FTransform(FRotator::ZeroRotator, SpawnLoc));
+        // if (NewIngredient)
+        // {
+        //     UGameplayStatics::FinishSpawningActor(NewIngredient, FTransform(FRotator::ZeroRotator, SpawnLoc));
+        //     UE_LOG(LogTemp, Warning, TEXT("Spawned via deferred: %s"), *NewIngredient->GetName());
+        // }
+        //
+        // UE_LOG(LogTemp, Warning, TEXT("ejecting ingredient 2"));
+        //
+        // if (!NewIngredient)
+        // {
+        // UE_LOG(LogTemp, Warning, TEXT("Error in creation"));
+        // }
+        // EjectAgent(NewIngredient);
         
         CurrentIngredients.Empty();
         UpdateWaterColor();
