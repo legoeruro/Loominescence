@@ -71,7 +71,7 @@ void ACraftingPlayerController::SetupInputComponent()
     // This sometimes does not work (unless live coding is triggered at least once)
     Input->BindAction(GrabAction, ETriggerEvent::Started, this, &ACraftingPlayerController::HandleBeginGrab);
     Input->BindAction(GrabAction, ETriggerEvent::Completed, this, &ACraftingPlayerController::HandleEndGrab);
-    Input->BindAction(GoToPlatformLevelAction, ETriggerEvent::Triggered, this, &ACraftingPlayerController::HandleGoToNewLevel);
+    //Input->BindAction(GoToPlatformLevelAction, ETriggerEvent::Triggered, this, &ACraftingPlayerController::HandleGoToNewLevel);
 }
 
 void ACraftingPlayerController::HandleGoToNewLevel()
