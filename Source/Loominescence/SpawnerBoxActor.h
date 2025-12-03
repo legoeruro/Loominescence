@@ -5,7 +5,7 @@
 #include "IngredientActor.h"
 #include "SpawnerBoxActor.generated.h"
 
-UCLASS()
+UCLASS(meta = (ToolTip = "This class is for box actors, which upon pressing spawns a material considering you have it in inventory."))
 class LOOMINESCENCE_API ASpawnerBoxActor : public AActor
 {
 	GENERATED_BODY()
@@ -25,6 +25,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="BoxVariables")
 	float EjectForce = 300.f;
+	
+	// Which item should this box search for (and spawn one of)
+	// Expect this to be unique
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="BoxVariables")
+	FString ItemNameToSpawn = TEXT("None");
+
+	UPROPERTY(BlueprintReadOnly, Category="BoxVariables")
+	bool bIsBoxUnavailable = false;
 
 	UPROPERTY()
 	UMaterialInstanceDynamic* BoxMaterial = nullptr;
@@ -33,7 +41,14 @@ public:
 	void TriggerSpawn();
 
 	void SpawnAndLaunch();
+	
+	UFUNCTION(BlueprintCallable)
+    void UpdateBoxAvailability();
+
 
 protected:
 	virtual void BeginPlay() override;
+	
+	UPROPERTY()
+	UActorComponent* InventoryComp;
 };

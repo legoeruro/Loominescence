@@ -2,6 +2,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
+#include "Utils/LoomiUtils.h"
+#include "GameFramework/Character.h"
 
 ASpawnerBoxActor::ASpawnerBoxActor()
 {
@@ -38,12 +40,52 @@ void ASpawnerBoxActor::BeginPlay()
 		WaterMaterial->SetVectorParameterValue("TintOverlay", TintColor);
 		UE_LOG(LogTemp, Warning, TEXT("Dynamic Material Created: %s"), *WaterMaterial->GetName());
 	}
+
+	// Retrieve the inventory actor component
+	ACharacter* PlayerChar = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+
+	if (PlayerChar)
+	{
+		InventoryComp = PlayerChar->GetComponentByClass(UActorComponent::StaticClass());
+
+		for (UActorComponent* Comp : PlayerChar->GetComponents())
+		{
+			// Assumes the BPC's name is Inventory
+			if (Comp && Comp->GetName().Contains(TEXT("Inventory")))
+			{
+				InventoryComp = Comp;
+				break;
+			}
+		}
+	}
+
+	UpdateBoxAvailability();
 }
 
+void ASpawnerBoxActor::UpdateBoxAvailability()
+{
+	int32 outIndex;
+	bool bHasItem = LoomiUtils::FindItemInInventory(InventoryComp, ItemNameToSpawn, outIndex);
+	bIsBoxUnavailable = !bHasItem;
+
+	// If no item was found
+	if (!bHasItem)
+	{
+		BoxMaterial->SetVectorParameterValue("TintOverlay", FLinearColor::Gray);
+	}
+	else
+	{
+		BoxMaterial->SetVectorParameterValue("TintOverlay", TintColor);
+	}
+}
 
 void ASpawnerBoxActor::TriggerSpawn()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Spawning ingredient"));
+
+	if (bIsBoxUnavailable)
+		return;
+		
 	SpawnAndLaunch();
 }
 
