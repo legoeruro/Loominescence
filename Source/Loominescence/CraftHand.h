@@ -35,12 +35,14 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="Hand")
 	USphereComponent* CollisionSphere;
 
-	// Properties and functions for the class
 	UPROPERTY()
 	AActor* GrabbedActor = nullptr;
 
 	UPROPERTY()
 	AActor* OverlappingActor = nullptr;
+
+	UPROPERTY()
+	TArray<AActor*> OverlappingActors;
 	
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -50,4 +52,7 @@ protected:
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 					  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION()
+	void UpdateClosestActor();
 };

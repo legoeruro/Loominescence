@@ -2,6 +2,7 @@
 #include "CraftHand.h"
 
 #include "CauldronActor.h"
+#include "SpawnerBoxActor.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 
@@ -47,14 +48,11 @@ void ACraftHand::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Oth
     // If grabbing an object already --> do not execute overlap code
     if (GrabbedActor) return;
     
-    if (OtherActor && OtherActor != this)
-    {
-        OverlappingActor = OtherActor;
-        
-        UE_LOG(LogTemp, Log, TEXT("Hand overlapping with: %s"), *OtherActor->GetName());
+    OverlappingActors.AddUnique(OtherActor);
 
-        ChangeHighlightActor( OverlappingActor, true);
-    }
+    UE_LOG(LogTemp, Warning, TEXT("Added overlap: %s"), *OtherActor->GetName());
+
+    UpdateClosestActor();
 }
 
 void ACraftHand::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -63,8 +61,46 @@ void ACraftHand::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other
     
     if (GrabbedActor) return;
     
-    OverlappingActor = nullptr;
-    ChangeHighlightActor(OverlappingActor, false);
+    OverlappingActors.Remove(OtherActor);
+}
+
+void ACraftHand::UpdateClosestActor()
+{
+    float BestDistance = FLT_MAX;
+    AActor* NewClosest = nullptr;
+
+    FVector HandLocation = GetActorLocation();
+
+    for (AActor* Actor : OverlappingActors)
+    {
+        if (!IsValid(Actor)) continue;
+
+        float Dist = FVector::Dist(HandLocation, Actor->GetActorLocation());
+        if (Dist < BestDistance)
+        {
+            BestDistance = Dist;
+            NewClosest = Actor;
+        }
+    }
+
+    // If closest changed, update highlight
+    if (NewClosest != OverlappingActor)
+    {
+        // Remove highlight from old closest
+        if (OverlappingActor)
+        {
+            ChangeHighlightActor(OverlappingActor, false);
+        }
+
+        OverlappingActor = NewClosest;
+
+        // Add highlight to new closest
+        if (OverlappingActor)
+        {
+            ChangeHighlightActor(OverlappingActor, true);
+        }
+    }
+
 }
 
 void ToggleActorPhysics(const AActor* GrabbedActor, bool IsPhysicsOn)
@@ -82,14 +118,21 @@ void ACraftHand::BeginGrab()
     if (!OverlappingActor) return;
     
     UE_LOG(LogTemp, Warning, TEXT("Grabbing: %s (Class: %s)"),
-*OverlappingActor->GetName(),
-*OverlappingActor->GetClass()->GetName());
+        *OverlappingActor->GetName(),
+        *OverlappingActor->GetClass()->GetName());
     // Special case: grab onto the pot
     if (ACauldronActor* Cauldron = Cast<ACauldronActor>(OverlappingActor))
     {
         UE_LOG(LogTemp, Warning, TEXT("This is a cauldron"));
 
         Cauldron->OnInteract();
+        return;
+    }
+
+    if (ASpawnerBoxActor* SpawnerBox = Cast<ASpawnerBoxActor>(OverlappingActor))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("This is a Box"));
+        SpawnerBox->TriggerSpawn();
         return;
     }
 
