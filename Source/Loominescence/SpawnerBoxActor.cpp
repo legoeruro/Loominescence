@@ -34,11 +34,10 @@ void ASpawnerBoxActor::BeginPlay()
 	// Create dynamic material
 	if (BoxMesh && BoxMesh->GetMaterial(0))
 	{
-		UMaterialInstanceDynamic* WaterMaterial = UMaterialInstanceDynamic::Create(BoxMesh->GetMaterial(0), this);
-		BoxMesh->SetMaterial(0, WaterMaterial);
+		BoxMaterial = UMaterialInstanceDynamic::Create(BoxMesh->GetMaterial(0), this);
+		BoxMesh->SetMaterial(0, BoxMaterial);
 
-		WaterMaterial->SetVectorParameterValue("TintOverlay", TintColor);
-		UE_LOG(LogTemp, Warning, TEXT("Dynamic Material Created: %s"), *WaterMaterial->GetName());
+		BoxMaterial->SetVectorParameterValue("TintOverlay", TintColor);
 	}
 
 	// Retrieve the inventory actor component
@@ -64,6 +63,8 @@ void ASpawnerBoxActor::BeginPlay()
 
 void ASpawnerBoxActor::UpdateBoxAvailability()
 {
+	if (!InventoryComp)
+		return;
 	int32 outIndex;
 	bool bHasItem = LoomiUtils::FindItemInInventory(InventoryComp, ItemNameToSpawn, outIndex);
 	bIsBoxUnavailable = !bHasItem;
