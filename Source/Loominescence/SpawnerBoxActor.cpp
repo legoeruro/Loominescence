@@ -49,8 +49,8 @@ void ASpawnerBoxActor::BeginPlay()
 
 		for (UActorComponent* Comp : PlayerChar->GetComponents())
 		{
-			// Assumes the BPC's name is Inventory
-			if (Comp && Comp->GetName().Contains(TEXT("Inventory")))
+			// Assumes the BPC's name is BPC_InventoryComponent
+			if (Comp && Comp->GetName().Contains(TEXT("BPC_InventoryComponent")))
 			{
 				InventoryComp = Comp;
 				break;
