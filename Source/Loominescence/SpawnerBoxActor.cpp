@@ -53,6 +53,8 @@ void ASpawnerBoxActor::BeginPlay()
 			if (Comp && Comp->GetName().Contains(TEXT("BPC_InventoryComponent")))
 			{
 				InventoryComp = Comp;
+				UE_LOG(LogTemp, Warning, TEXT("Found blueprint component"));
+				
 				break;
 			}
 		}
@@ -65,10 +67,11 @@ void ASpawnerBoxActor::UpdateBoxAvailability()
 {
 	if (!InventoryComp)
 		return;
-	int32 outIndex;
-	bool bHasItem = LoomiUtils::FindItemInInventory(InventoryComp, ItemNameToSpawn, outIndex);
+	bool bHasItem = LoomiUtils::IsElementInInventory(InventoryComp, ItemElementalType);
 	bIsBoxUnavailable = !bHasItem;
-
+	
+	UE_LOG(LogTemp, Warning, TEXT("Is box available %d"), bIsBoxUnavailable);
+	
 	// If no item was found
 	if (!bHasItem)
 	{

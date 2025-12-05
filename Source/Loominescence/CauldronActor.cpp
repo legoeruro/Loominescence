@@ -1,5 +1,5 @@
 #include "CauldronActor.h"
-#include "GameTypes.h"
+#include "Utils/GameTypes.h"
 #include "IngredientActor.h"
 #include "MixingManager.h"
 #include "Components/StaticMeshComponent.h"

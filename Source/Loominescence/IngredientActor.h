@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GameTypes.h"
+#include "Utils/GameTypes.h"
 #include "IngredientActor.generated.h"
 
 UCLASS()

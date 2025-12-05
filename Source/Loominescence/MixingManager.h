@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameTypes.h"
+#include "Utils/GameTypes.h"
 #include "PotionActor.h"
 #include "MixingManager.generated.h"
 
