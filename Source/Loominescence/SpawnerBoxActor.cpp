@@ -50,7 +50,7 @@ void ASpawnerBoxActor::BeginPlay()
 		for (UActorComponent* Comp : PlayerChar->GetComponents())
 		{
 			// Assumes the BPC's name is BPC_InventoryComponent
-			if (Comp && Comp->GetName().Contains(TEXT("BPC_InventoryComponent")))
+			if (Comp && Comp->GetName().Contains(TEXT("BPC_InventoryMiniComponent")))
 			{
 				InventoryComp = Comp;
 				UE_LOG(LogTemp, Warning, TEXT("Found blueprint component"));
