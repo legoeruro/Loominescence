@@ -124,6 +124,28 @@ void ACauldronActor::OnInteract()
     }
 }
 
+FString ACauldronActor::GetStringListOfIngredients() const
+{
+    FString Result = TEXT("");
+
+    for (AIngredientActor* Ingredient : CurrentIngredients)
+    {
+        if (!Ingredient) continue;
+
+        FString Name = Ingredient->IngredientName.ToString();
+        FString ColorHex = Ingredient->LiquidColor.ToFColorSRGB().ToHex();
+
+        Result += FString::Printf(
+            TEXT("<span color=\"#%s\">%s</span>\n"),
+            *ColorHex,
+            *Name
+        );
+    }
+
+    return Result;
+}
+
+
 void ACauldronActor::EjectAgent(AActor* ThisActor)
 {
     if (!ThisActor) return;

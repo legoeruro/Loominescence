@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "InputAction.h"
+#include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -35,13 +36,6 @@ void ACraftingPlayerController::BeginPlay()
         }
     }
     
-    if (!HandActor && HandActorClass)
-    {
-        FActorSpawnParameters Params;
-        Params.Owner = this;
-        HandActor = GetWorld()->SpawnActor<ACraftHand>(HandActorClass, FVector(0.f, 0.f, 0.f), FRotator::ZeroRotator, Params);
-    }
-
     // Set camera from CameraActor
     TArray<AActor*> Cameras;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), Cameras);
@@ -51,6 +45,19 @@ void ACraftingPlayerController::BeginPlay()
         SetViewTargetWithBlend(Cameras[0]);
         LevelCamera = Cast<ACameraActor>(Cameras[0]);
     }
+    
+    if (!HandActor && HandActorClass)
+    {
+        FActorSpawnParameters Params;
+        Params.Owner = this;
+        HandActor = GetWorld()->SpawnActor<ACraftHand>(HandActorClass, FVector(0.f, 0.f, 0.f), FRotator::ZeroRotator, Params);
+    }
+
+    TooltipWidgetInstance = BP_CreateTooltipWidget();
+    if (TooltipWidgetInstance && HandActor)
+    {
+        HandActor->TooltipWidgetInstance = TooltipWidgetInstance;
+    }
 }
 
 void ACraftingPlayerController::Tick(float DeltaSeconds)
@@ -59,8 +66,18 @@ void ACraftingPlayerController::Tick(float DeltaSeconds)
     UpdateHandPosition();
     UpdateCameraOffset(DeltaSeconds);
 
-    //TODO: refactor and move this to somewhere that makes more sense
-    
+    // TODO: consider raycasting (FHitResult) instead of overlapping
+    // The actual visibility and content modification is done by CraftHand.cpp
+    if (TooltipWidgetInstance)
+    {
+        FVector2D MousePos;
+        if (GetMousePosition(MousePos.X, MousePos.Y))
+        {
+            // offset so it doesn't sit exactly under cursor
+            const FVector2D Offset(16.f, 16.f);
+            TooltipWidgetInstance->SetPositionInViewport(MousePos + Offset, true);
+        }
+    }
 }
 
 void ACraftingPlayerController::SetupInputComponent()

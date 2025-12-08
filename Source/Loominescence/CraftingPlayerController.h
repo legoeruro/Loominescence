@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CraftHand.h"
+#include "CustomUI/TooltipWidget.h"
 #include "GameFramework/PlayerController.h"
 #include "CraftingPlayerController.generated.h"
 
@@ -39,6 +40,19 @@ protected:
 
     UPROPERTY()
     ACraftHand* HandActor;
+
+    // Tooltip Reference
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<UTooltipWidgetBase> TooltipWidgetClass;
+
+    UPROPERTY()
+    UTooltipWidgetBase* TooltipWidgetInstance;
+
+    UPROPERTY()
+    AActor* CurrentTooltipActor = nullptr;
+
+    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="UI")
+    UTooltipWidgetBase* BP_CreateTooltipWidget();
 
     UPROPERTY()
     AActor* LevelCamera;
