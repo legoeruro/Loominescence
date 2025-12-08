@@ -44,6 +44,13 @@ void ACauldronActor::OnDropZoneOverlap(UPrimitiveComponent* OverlappedComp, AAct
                                        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
                                        bool bFromSweep, const FHitResult& SweepResult)
 {
+    // Limit ingredients amount to 2
+    if (CurrentIngredients.Num() >= 2)
+    {
+        EjectAgent(OtherActor);
+        return;
+    }
+    
     AIngredientActor* Ingredient = Cast<AIngredientActor>(OtherActor);
     if (Ingredient)
     {
@@ -146,9 +153,10 @@ void ACauldronActor::EjectAgent(AActor* ThisActor)
     FVector LaunchDir = FVector(FMath::FRandRange(-0.3f, 0.3f), FMath::FRandRange(-0.3f, 0.3f), 1.0f);
     LaunchDir.Normalize();
 
-    ThisActor->SetActorLocation(GetActorLocation() + FVector(0,0,50));
+    ThisActor->SetActorLocation(GetActorLocation() + FVector(0,0,200));
     if (UPrimitiveComponent* Comp = Cast<UPrimitiveComponent>(ThisActor->GetRootComponent()))
     {
+        Comp->SetSimulatePhysics(true);
         Comp->AddImpulse(LaunchDir * EjectForce, NAME_None, true);
     }
 }

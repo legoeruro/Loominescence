@@ -238,7 +238,61 @@ void ACraftHand::BeginGrab()
 
 void ACraftHand::BeginRightMouse()
 {
-    
+    // get overlapping actor
+    // run cleanup code for overlapping actor (parsing it into an ingredient)
+    // remove overlapping actor
+    if (!OverlappingActor)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Right-click: No overlapping actor."));
+        return;
+    }
+
+    UE_LOG(LogTemp, Warning, TEXT("Right-click on: %s (Class: %s)"),
+        *OverlappingActor->GetName(),
+        *OverlappingActor->GetClass()->GetName());
+
+    if (AIngredientActor* Ingredient = Cast<AIngredientActor>(OverlappingActor))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Cleaning up ingredient: %s"), *Ingredient->GetName());
+
+        // Call Blueprint/C++ cleanup logic
+        Ingredient->CleanupOnDestroy(true);
+
+        // Add ingredient back to inventory
+        UActorComponent* InventoryComp = ULoomiUtils::GetInventoryComponent(this);
+        if (!InventoryComp)
+        {
+            UE_LOG(LogTemp, Error, TEXT("No inventory component found for ingredient cleanup!"));
+            return;
+        }
+
+        static FName AddIngredientFuncName = TEXT("AddIngredient");
+        UFunction* AddIngredientFunction = InventoryComp->FindFunction(AddIngredientFuncName);
+
+        if (!AddIngredientFunction)
+        {
+            UE_LOG(LogTemp, Error, TEXT("AddIngredient() function not found on InventoryComp!"));
+            return;
+        }
+
+        struct FAddIngredient_Params
+        {
+            FIngredientData IngredientData;  // You must define this inside IngredientActor
+        };
+
+        // Build params (your ingredient must expose something like Ingredient->IngredientData)
+        FAddIngredient_Params Params;
+        Params.IngredientData = Ingredient->IngredientData;  
+
+        InventoryComp->ProcessEvent(AddIngredientFunction, &Params);
+
+        UE_LOG(LogTemp, Warning, TEXT("Ingredient returned to inventory."));
+
+        // Destroy actor after returning
+        Ingredient->Destroy();
+        return;
+    }
+
 }
 
 

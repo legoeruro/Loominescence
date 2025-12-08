@@ -88,6 +88,7 @@ void ACraftingPlayerController::SetupInputComponent()
     // This sometimes does not work (unless live coding is triggered at least once)
     Input->BindAction(GrabAction, ETriggerEvent::Started, this, &ACraftingPlayerController::HandleBeginGrab);
     Input->BindAction(GrabAction, ETriggerEvent::Completed, this, &ACraftingPlayerController::HandleEndGrab);
+    Input->BindAction(RightMouseAction, ETriggerEvent::Started, this, &ACraftingPlayerController::HandleRightMouse);
     //Input->BindAction(GoToPlatformLevelAction, ETriggerEvent::Triggered, this, &ACraftingPlayerController::HandleGoToNewLevel);
 }
 
@@ -103,6 +104,12 @@ void ACraftingPlayerController::HandleBeginGrab()
 {
     UE_LOG(LogTemp, Log, TEXT("Grab triggered"));
     HandActor->BeginGrab();
+}
+
+void ACraftingPlayerController::HandleRightMouse()
+{
+    UE_LOG(LogTemp, Log, TEXT("Right mouse triggered"));
+    HandActor->BeginRightMouse();
 }
 
 void ACraftingPlayerController::HandleEndGrab()
