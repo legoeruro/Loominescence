@@ -207,3 +207,45 @@ bool LoomiUtils::IsElementInInventory(
     // FMemory::Free(ReturnValueAddr);
     // return false;
 }
+
+UPotionMixingManager* LoomiUtils::GetMixingManager(UObject* WorldContext)
+{
+    UObject* GI = WorldContext->GetWorld()->GetGameInstance();
+
+    if (!WorldContext)
+    {
+        UE_LOG(LogTemp, Error, TEXT("GetMixingManager: No WorldContext!"));
+        return nullptr;
+    }
+
+    if (!GI)
+    {
+        UE_LOG(LogTemp, Error, TEXT("GetMixingManager: No GameInstance!"));
+        return nullptr;
+    }
+
+    // Reflection access for BP variable "MixingManager"
+    FProperty* Prop = GI->GetClass()->FindPropertyByName(TEXT("MixingManager"));
+    if (!Prop)
+    {
+        UE_LOG(LogTemp, Error, TEXT("MixingManager variable not found in GameInstance!"));
+        return nullptr;
+    }
+
+    FObjectProperty* ObjProp = CastField<FObjectProperty>(Prop);
+    if (!ObjProp)
+    {
+        UE_LOG(LogTemp, Error, TEXT("MixingManager is not an object property!"));
+        return nullptr;
+    }
+
+    UPotionMixingManager* Result =
+        Cast<UPotionMixingManager>(ObjProp->GetObjectPropertyValue_InContainer(GI));
+
+    if (!Result)
+    {
+        UE_LOG(LogTemp, Error, TEXT("MixingManager is null — did you assign it in BP_GameInstance?"));
+    }
+
+    return Result;
+}

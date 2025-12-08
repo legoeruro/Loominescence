@@ -1,8 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Utils/GameTypes.h"
-#include "PotionActor.h"
+#include "GameTypes.h"
 #include "MixingManager.generated.h"
 
 USTRUCT(BlueprintType)

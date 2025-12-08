@@ -1,9 +1,10 @@
 #include "CauldronActor.h"
 #include "Utils/GameTypes.h"
 #include "IngredientActor.h"
-#include "MixingManager.h"
+#include "Utils/MixingManager.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "Utils/LoomiUtils.h"
 #include "Kismet/GameplayStatics.h"
 
 ACauldronActor::ACauldronActor()
@@ -128,18 +129,26 @@ FString ACauldronActor::GetStringListOfIngredients() const
 {
     FString Result = TEXT("");
 
-    for (AIngredientActor* Ingredient : CurrentIngredients)
+    if (CurrentIngredients.Num() == 0)
     {
+        return TEXT("Nothingness");
+    }
+
+    for (int i = 0; i < CurrentIngredients.Num(); ++i)
+    {
+        AIngredientActor* Ingredient = CurrentIngredients[i];
         if (!Ingredient) continue;
 
         FString Name = Ingredient->IngredientName.ToString();
         FString ColorHex = Ingredient->LiquidColor.ToFColorSRGB().ToHex();
 
         Result += FString::Printf(
-            TEXT("<span color=\"#%s\">%s</span>\n"),
-            *ColorHex,
+            TEXT("%s"),
             *Name
         );
+
+        if (i != CurrentIngredients.Num() - 1)
+            Result += TEXT(", ");
     }
 
     return Result;
@@ -184,7 +193,7 @@ void ACauldronActor::MixIngredients()
     }
     CurrentIngredients.Empty();
 
-    const auto* MixingManager = GetDefault<UPotionMixingManager>();
+    const auto* MixingManager = LoomiUtils::GetMixingManager(this);
     if (!MixingManager)
     {
         UE_LOG(LogTemp, Error, TEXT("MixingManager not found!"));
