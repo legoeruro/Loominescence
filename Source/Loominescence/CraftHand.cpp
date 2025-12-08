@@ -6,6 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "CustomUI/TooltipProvider.h"
+#include "Utils/ULoomiUtils.h"
 #include "Evaluation/IMovieSceneEvaluationHook.h"
 
 ACraftHand::ACraftHand()
@@ -189,9 +190,57 @@ void ACraftHand::BeginGrab()
         return;
     }
 
+    if (APotionActor* Potion = Cast<APotionActor>(OverlappingActor))
+    {
+        // 1st, call function "Add Potion" from the inventory manager
+
+        UE_LOG(LogTemp, Warning, TEXT("Grabbing a potion: %s"), *Potion->GetName());
+    
+        FPotionData PotionData = Potion->PotionData;
+    
+        
+        UActorComponent* InventoryComp = ULoomiUtils::GetInventoryComponent(this);
+        if (!InventoryComp)
+        {
+            UE_LOG(LogTemp, Error, TEXT("Inventory component not found!"));
+            return;
+        }
+    
+        static FName AddPotionFuncName = TEXT("AddPotion");
+        UFunction* AddPotionFunction = InventoryComp->FindFunction(AddPotionFuncName);
+    
+        if (!AddPotionFunction)
+        {
+            UE_LOG(LogTemp, Error, TEXT("AddPotion() function not found on InventoryComp!"));
+            return;
+        }
+    
+        struct FAddPotion_Params
+        {
+            FPotionData Potion;
+        };
+    
+        FAddPotion_Params Params;
+        Params.Potion = PotionData;
+    
+        InventoryComp->ProcessEvent(AddPotionFunction, &Params);
+    
+        UE_LOG(LogTemp, Warning, TEXT("Potion added to inventory successfully."));
+        
+        // 2nd, destroy potion
+        Potion->Destroy();
+        return;
+    }
+
     GrabbedActor = OverlappingActor;
     ToggleActorPhysics(GrabbedActor, false);
 }
+
+void ACraftHand::BeginRightMouse()
+{
+    
+}
+
 
 void ACraftHand::EndGrab()
 {

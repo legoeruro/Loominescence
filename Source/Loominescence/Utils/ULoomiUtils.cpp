@@ -1,7 +1,9 @@
-#include "LoomiUtils.h"
+#include "ULoomiUtils.h"
 #include "GameTypes.h"
+#include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 
-bool LoomiUtils::IsElementInInventory(
+bool ULoomiUtils::IsElementInInventory(
     UActorComponent* InventoryComp,
     const EElementalType ItemElementToFind)
 {
@@ -208,7 +210,7 @@ bool LoomiUtils::IsElementInInventory(
     // return false;
 }
 
-UPotionMixingManager* LoomiUtils::GetMixingManager(UObject* WorldContext)
+UPotionMixingManager* ULoomiUtils::GetMixingManager(UObject* WorldContext)
 {
     UObject* GI = WorldContext->GetWorld()->GetGameInstance();
 
@@ -248,4 +250,32 @@ UPotionMixingManager* LoomiUtils::GetMixingManager(UObject* WorldContext)
     }
 
     return Result;
+}
+
+UActorComponent* ULoomiUtils::GetInventoryComponent(UObject* WorldContext)
+{
+    if (!WorldContext)
+        return nullptr;
+
+    UWorld* World = WorldContext->GetWorld();
+    if (!World)
+        return nullptr;
+
+    ACharacter* PlayerChar = UGameplayStatics::GetPlayerCharacter(World, 0);
+    if (!PlayerChar)
+        return nullptr;
+
+    for (UActorComponent* Comp : PlayerChar->GetComponents())
+    {
+        if (Comp && Comp->GetName().Contains(TEXT("BPC_InventoryMiniComponent")))
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Found inventory component: %s"), *Comp->GetName());
+            return Comp;
+        }
+    }
+
+    // No match found
+    UE_LOG(LogTemp, Error, TEXT("Inventory component not found on %s"), *PlayerChar->GetName());
+    return nullptr;
+
 }

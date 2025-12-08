@@ -2,7 +2,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
-#include "Utils/LoomiUtils.h"
+#include "Utils/ULoomiUtils.h"
 #include "GameFramework/Character.h"
 
 ASpawnerBoxActor::ASpawnerBoxActor()
@@ -67,7 +67,7 @@ void ASpawnerBoxActor::UpdateBoxAvailability()
 {
 	if (!InventoryComp)
 		return;
-	bool bHasItem = LoomiUtils::IsElementInInventory(InventoryComp, ItemElementalType);
+	bool bHasItem = ULoomiUtils::IsElementInInventory(InventoryComp, ItemElementalType);
 	bIsBoxUnavailable = !bHasItem;
 	
 	UE_LOG(LogTemp, Warning, TEXT("Is box available %d"), bIsBoxUnavailable);

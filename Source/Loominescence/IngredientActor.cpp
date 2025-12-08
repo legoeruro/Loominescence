@@ -10,3 +10,8 @@ AIngredientActor::AIngredientActor()
 	PrimaryActorTick.bCanEverTick = true;
 
 }
+
+void AIngredientActor::CleanupOnDestroy_Implementation(bool bUsed)
+{
+    UE_LOG(LogTemp, Error, TEXT("Please implement the the cleanup function"));
+}

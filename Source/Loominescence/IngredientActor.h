@@ -23,4 +23,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ingredient")
 	FLinearColor LiquidColor;
+
+	// This cleanup function should be implemented in blueprint to add logic to change inventory items
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Ingredient")
+	void CleanupOnDestroy(bool WasItemUsed);
 };

@@ -20,6 +20,9 @@ public:
 	UFUNCTION()
 	void EndGrab();
 
+	UFUNCTION()
+	void BeginRightMouse();
+
 	// Tooltip reference
 	// The position of the tooltip will be updated through the controller in tick(), while the content and visibility
 	// will be managed by the craft hand
