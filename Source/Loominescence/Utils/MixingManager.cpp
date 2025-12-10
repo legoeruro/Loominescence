@@ -2,13 +2,19 @@
 
 FPotionData UPotionMixingManager::GetResult(EElementalType A, EElementalType B) const
 {
+	FMixRecipe recipe = GetRecipe(A, B);
+	return recipe.ResultPotion;
+}
+
+FMixRecipe UPotionMixingManager::GetRecipe(EElementalType A, EElementalType B) const
+{
 	for (const FMixRecipe& Recipe : Recipes)
 	{
-        UE_LOG(LogTemp, Warning, TEXT("Recipe %hhd %hhd"), Recipe.ElementA, Recipe.ElementB);
+		UE_LOG(LogTemp, Warning, TEXT("Recipe %hhd %hhd"), Recipe.ElementA, Recipe.ElementB);
 		if ((Recipe.ElementA == A && Recipe.ElementB == B) ||
 			(Recipe.ElementA == B && Recipe.ElementB == A))
 		{
-			return Recipe.ResultPotion;
+			return Recipe;
 		}
 	}
 
@@ -20,7 +26,11 @@ FPotionData UPotionMixingManager::GetResult(EElementalType A, EElementalType B) 
 		FMath::FRand(),
 		1.0f           
 	);
-
 	EmptyPotion.EffectType = EPotionEffect::None;
-	return EmptyPotion;
+
+	FMixRecipe FMixRecipe;
+	FMixRecipe.ElementA = A;
+	FMixRecipe.ElementB = B;
+	FMixRecipe.ResultPotion = EmptyPotion;
+	return FMixRecipe;
 }

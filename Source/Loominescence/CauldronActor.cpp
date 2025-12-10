@@ -142,6 +142,10 @@ FString ACauldronActor::GetStringListOfIngredients() const
     return Result;
 }
 
+void ACauldronActor::AddUnlockRecipeToJournal_Implementation(FMixRecipe Recipe)
+{
+    UE_LOG(LogTemp, Warning, TEXT("Impolement this in blueprints!"));
+}
 
 void ACauldronActor::EjectAgent(AActor* ThisActor)
 {
@@ -190,6 +194,8 @@ void ACauldronActor::MixIngredients()
     }
 
     FPotionData PotionData = MixingManager->GetResult(ElemA, ElemB);
+    FMixRecipe Recipe = MixingManager->GetRecipe(ElemB, ElemA);
+    AddUnlockRecipeToJournal(Recipe);
 
     // Ensure we have a potion blueprint
     if (!PotionBlueprint)
