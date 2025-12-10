@@ -38,6 +38,9 @@ struct FPotionData
 	FName PotionName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Potion")
+	FString PotionDescription;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Potion")
 	FLinearColor LiquidColor;
 
 	// Icon / sprite for UI

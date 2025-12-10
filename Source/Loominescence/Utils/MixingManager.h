@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "GameTypes.h"
-#include "PotionActor.h"
 #include "MixingManager.generated.h"
 
 USTRUCT(BlueprintType)

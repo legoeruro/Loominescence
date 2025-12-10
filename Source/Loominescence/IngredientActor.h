@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GameTypes.h"
+#include "Utils/GameTypes.h"
 #include "IngredientActor.generated.h"
 
 UCLASS()
@@ -15,6 +15,9 @@ class LOOMINESCENCE_API AIngredientActor : public AActor
 public:
 	AIngredientActor();
 
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ingredient")
+	// UStaticMeshComponent* Mesh;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ingredient")
 	FName IngredientName;
 
@@ -23,4 +26,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ingredient")
 	FLinearColor LiquidColor;
+
+	// This cleanup function should be implemented in blueprint to add logic to change inventory items
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Ingredient")
+	void CleanupOnDestroy(bool WasItemUsed);
+
+	virtual void CleanupOnDestroy_Implementation(bool WasItemUsed);
 };

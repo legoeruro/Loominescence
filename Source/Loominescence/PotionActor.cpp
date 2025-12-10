@@ -29,3 +29,21 @@ void APotionActor::InitializePotion(const FPotionData& Data)
 		*Data.PotionName.ToString(),
 		static_cast<uint8>(Data.EffectType));
 }
+
+FString EnumToString(EPotionEffect Value)
+{
+	const UEnum* EnumPtr = StaticEnum<EPotionEffect>();
+	if (!EnumPtr) return "Invalid";
+
+	return EnumPtr->GetNameStringByValue((int64)Value);
+}
+
+FTooltipData APotionActor::GetTooltipData_Implementation() const
+{
+	FTooltipData Data;
+	Data.RichText = FString::Printf(
+		TEXT("<Title>Potion</>\n<Description>A potion with the effect %s</>"), *EnumToString(PotionData.EffectType)
+	);
+	return Data;
+}
+

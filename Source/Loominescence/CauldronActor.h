@@ -61,6 +61,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnInteract();
 
+	UFUNCTION(BlueprintCallable)
+	FString GetStringListOfIngredients() const;
+
 	void MixIngredients();
 
 	// Shoots out agent from the cauldron (ingredients or potion)

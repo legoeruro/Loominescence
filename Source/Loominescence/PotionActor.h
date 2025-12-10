@@ -5,10 +5,12 @@
 #include "CoreMinimal.h"
 #include "IngredientActor.h"
 #include "GameFramework/Actor.h"
+#include "CustomUI/TooltipProvider.h"
 #include "PotionActor.generated.h"
 
+
 UCLASS()
-class LOOMINESCENCE_API APotionActor : public AActor
+class LOOMINESCENCE_API APotionActor : public AActor, public ITooltipProvider
 {
 	GENERATED_BODY()
 	
@@ -26,4 +28,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Potion")
 	void InitializePotion(const FPotionData& Data);
+
+	virtual FTooltipData GetTooltipData_Implementation() const override;
 };
