@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CraftHand.h"
+#include "CustomUI/TooltipWidget.h"
 #include "GameFramework/PlayerController.h"
 #include "CraftingPlayerController.generated.h"
 
@@ -32,6 +33,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     class UInputAction* GoToPlatformLevelAction;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    class UInputAction* RightMouseAction;
     
     // Hand Reference
     UPROPERTY(EditAnywhere, Category = "Hand")
@@ -39,6 +43,19 @@ protected:
 
     UPROPERTY()
     ACraftHand* HandActor;
+
+    // Tooltip Reference
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<UTooltipWidgetBase> TooltipWidgetClass;
+
+    UPROPERTY()
+    UTooltipWidgetBase* TooltipWidgetInstance;
+
+    UPROPERTY()
+    AActor* CurrentTooltipActor = nullptr;
+
+    UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="UI")
+    UTooltipWidgetBase* BP_CreateTooltipWidget();
 
     UPROPERTY()
     AActor* LevelCamera;
@@ -63,6 +80,7 @@ private:
     void HandleBeginGrab();
     void HandleEndGrab();
     void HandleMouseMove();
+    void HandleRightMouse();
     void HandleGoToNewLevel();
     void UpdateHandPosition();
     void UpdateCameraOffset(float DeltaSeconds);

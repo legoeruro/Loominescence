@@ -4,6 +4,7 @@ FPotionData UPotionMixingManager::GetResult(EElementalType A, EElementalType B) 
 {
 	for (const FMixRecipe& Recipe : Recipes)
 	{
+        UE_LOG(LogTemp, Warning, TEXT("Recipe %hhd %hhd"), Recipe.ElementA, Recipe.ElementB);
 		if ((Recipe.ElementA == A && Recipe.ElementB == B) ||
 			(Recipe.ElementA == B && Recipe.ElementB == A))
 		{

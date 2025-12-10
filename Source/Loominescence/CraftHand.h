@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/SphereComponent.h"
+#include "CustomUI/TooltipWidget.h" 
 #include "GameFramework/Actor.h"
 #include "CraftHand.generated.h"
 
@@ -18,6 +19,18 @@ public:
 	
 	UFUNCTION()
 	void EndGrab();
+
+	UFUNCTION()
+	void BeginRightMouse();
+
+	// Tooltip reference
+	// The position of the tooltip will be updated through the controller in tick(), while the content and visibility
+	// will be managed by the craft hand
+	UPROPERTY()
+	UTooltipWidgetBase* TooltipWidgetInstance;
+
+	UPROPERTY()
+	AActor* CurrentTooltipActor = nullptr;
 
 protected:
 	// Settings
@@ -43,7 +56,7 @@ protected:
 
 	UPROPERTY()
 	TArray<AActor*> OverlappingActors;
-	
+
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 						UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
@@ -55,4 +68,10 @@ protected:
 
 	UFUNCTION()
 	void UpdateClosestActor();
+
+	UFUNCTION()
+	bool DoesActorHaveTooltip(AActor* Actor);
+	
+	UFUNCTION()
+	void UpdateTooltip(bool IsOn, AActor* Actor);
 };
