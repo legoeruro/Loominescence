@@ -160,6 +160,8 @@ void ACraftHand::UpdateClosestActor()
 void ToggleActorPhysics(const AActor* GrabbedActor, bool IsPhysicsOn)
 {
     if (!GrabbedActor) return;
+    UE_LOG(LogTemp, Warning, TEXT("Toggle physics"));
+    
     if (UStaticMeshComponent* MeshComp = GrabbedActor->FindComponentByClass<UStaticMeshComponent>())
     {
         MeshComp->SetSimulatePhysics(IsPhysicsOn);  // Turn on physics
@@ -174,6 +176,7 @@ void ACraftHand::BeginGrab()
     UE_LOG(LogTemp, Warning, TEXT("Grabbing: %s (Class: %s)"),
         *OverlappingActor->GetName(),
         *OverlappingActor->GetClass()->GetName());
+    
     // Special case: grab onto the pot
     if (ACauldronActor* Cauldron = Cast<ACauldronActor>(OverlappingActor))
     {
@@ -232,6 +235,19 @@ void ACraftHand::BeginGrab()
         return;
     }
 
+    UE_LOG(LogTemp, Warning, TEXT("=== COMPONENT TREE FOR %s ==="), *OverlappingActor->GetName());
+
+    TArray<UActorComponent*> Components;
+    OverlappingActor->GetComponents(Components);
+
+    for (UActorComponent* C : Components)
+    {
+        if (!C) continue;
+
+        UE_LOG(LogTemp, Warning, TEXT("Component: %s (%s)"),
+            *C->GetName(),
+            *C->GetClass()->GetName());
+    }
     GrabbedActor = OverlappingActor;
     ToggleActorPhysics(GrabbedActor, false);
 }
@@ -256,39 +272,7 @@ void ACraftHand::BeginRightMouse()
         UE_LOG(LogTemp, Warning, TEXT("Cleaning up ingredient: %s"), *Ingredient->GetName());
 
         // Call Blueprint/C++ cleanup logic
-        Ingredient->CleanupOnDestroy(true);
-
-        // Add ingredient back to inventory
-        UActorComponent* InventoryComp = ULoomiUtils::GetInventoryComponent(this);
-        if (!InventoryComp)
-        {
-            UE_LOG(LogTemp, Error, TEXT("No inventory component found for ingredient cleanup!"));
-            return;
-        }
-
-        static FName AddIngredientFuncName = TEXT("AddIngredient");
-        UFunction* AddIngredientFunction = InventoryComp->FindFunction(AddIngredientFuncName);
-
-        if (!AddIngredientFunction)
-        {
-            UE_LOG(LogTemp, Error, TEXT("AddIngredient() function not found on InventoryComp!"));
-            return;
-        }
-
-        struct FAddIngredient_Params
-        {
-            FIngredientData IngredientData;  // You must define this inside IngredientActor
-        };
-
-        // Build params (your ingredient must expose something like Ingredient->IngredientData)
-        FAddIngredient_Params Params;
-        Params.IngredientData = Ingredient->IngredientData;  
-
-        InventoryComp->ProcessEvent(AddIngredientFunction, &Params);
-
-        UE_LOG(LogTemp, Warning, TEXT("Ingredient returned to inventory."));
-
-        // Destroy actor after returning
+        Ingredient->CleanupOnDestroy(false);
         Ingredient->Destroy();
         return;
     }
@@ -306,14 +290,51 @@ void ACraftHand::Tick(float DeltaSeconds)
 {
     if (GrabbedActor)
     {
-        GrabbedActor = OverlappingActor;
-
         FVector CurrentLoc = GrabbedActor->GetActorLocation();
         FVector TargetLoc = this->GetActorLocation();
         TargetLoc.Z = ObjectZPLane;
 
         // Smoothly interpolate
         FVector NewLoc = FMath::VInterpTo(CurrentLoc, TargetLoc, DeltaSeconds, 20.f); // 5.f = speed
-        GrabbedActor->SetActorLocation(NewLoc);
+        UE_LOG(LogTemp, Warning, TEXT("Tick Grab: %s from %s -> %s"),
+            *GrabbedActor->GetName(),
+            *CurrentLoc.ToString(),
+            *NewLoc.ToString());
+
+        bool bMoved = GrabbedActor->SetActorLocation(NewLoc, false, nullptr, ETeleportType::None);
+        if (UPrimitiveComponent* Prim = GrabbedActor->FindComponentByClass<UPrimitiveComponent>())
+        {
+            Prim->SetWorldLocation(NewLoc);
+        }
+
+        UE_LOG(LogTemp, Warning, TEXT("SetActorLocation returned: %s"),
+            bMoved ? TEXT("true") : TEXT("false"));
+
+        // Also dump root + primitive component location:
+        if (USceneComponent* Root = GrabbedActor->GetRootComponent())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("  Root(%s) at %s"),
+                *Root->GetClass()->GetName(),
+                *Root->GetComponentLocation().ToString());
+        }
+
+        if (UPrimitiveComponent* Prim = GrabbedActor->FindComponentByClass<UPrimitiveComponent>())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("  Prim(%s) at %s | SimPhys=%d"),
+                *Prim->GetClass()->GetName(),
+                *Prim->GetComponentLocation().ToString(),
+                Prim->IsSimulatingPhysics());
+
+            if (Prim->GetAttachParent())
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Mesh parent: %s (%s)"),
+                    *Prim->GetAttachParent()->GetName(),
+                    *Prim->GetAttachParent()->GetClass()->GetName());
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Mesh has NO parent!"));
+            }
+        }
     }
 }

@@ -15,6 +15,9 @@ class LOOMINESCENCE_API AIngredientActor : public AActor
 public:
 	AIngredientActor();
 
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ingredient")
+	// UStaticMeshComponent* Mesh;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ingredient")
 	FName IngredientName;
 
@@ -27,4 +30,6 @@ public:
 	// This cleanup function should be implemented in blueprint to add logic to change inventory items
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Ingredient")
 	void CleanupOnDestroy(bool WasItemUsed);
+
+	virtual void CleanupOnDestroy_Implementation(bool WasItemUsed);
 };
