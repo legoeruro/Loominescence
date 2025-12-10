@@ -44,8 +44,8 @@ struct FPotionData
 	FLinearColor LiquidColor;
 
 	// Icon / sprite for UI
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Potion")
-	// UTexture2D* PotionIcon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Potion")
+	UTexture2D* PotionIcon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Potion")
 	EPotionEffect EffectType;

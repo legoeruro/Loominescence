@@ -7,6 +7,7 @@
 #include "PotionActor.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
+#include "Utils/MixingManager.h"
 #include "CauldronActor.generated.h"
 
 UCLASS()
@@ -16,6 +17,10 @@ class LOOMINESCENCE_API ACauldronActor : public AActor
 
 public:
 	ACauldronActor();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void AddUnlockRecipeToJournal(FMixRecipe Recipe);
+	virtual void AddUnlockRecipeToJournal_Implementation(FMixRecipe Recipe);
 
 protected:
 	virtual void BeginPlay() override;
@@ -54,8 +59,6 @@ protected:
 	void OnDropZoneOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 						   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 						   bool bFromSweep, const FHitResult& SweepResult);
-
-	
 
 public:
 	UFUNCTION(BlueprintCallable)

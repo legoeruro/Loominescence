@@ -30,4 +30,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Mixing")
 	FPotionData GetResult(EElementalType A, EElementalType B) const;
+
+	UFUNCTION(BlueprintCallable, Category = "Mixing")
+	FMixRecipe GetRecipe(EElementalType A, EElementalType B) const;
 };
