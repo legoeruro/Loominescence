@@ -30,6 +30,9 @@ public:
 	// Expect this to be unique
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="BoxVariables")
 	FString ItemNameToSpawn = TEXT("None");
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="BoxVariables")
+	EElementalType ItemElementalType = EElementalType::None;
 
 	UPROPERTY(BlueprintReadOnly, Category="BoxVariables")
 	bool bIsBoxUnavailable = false;

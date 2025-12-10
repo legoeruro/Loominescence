@@ -1,9 +1,10 @@
 #include "CauldronActor.h"
-#include "GameTypes.h"
+#include "Utils/GameTypes.h"
 #include "IngredientActor.h"
-#include "MixingManager.h"
+#include "Utils/MixingManager.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "Utils/ULoomiUtils.h"
 #include "Kismet/GameplayStatics.h"
 
 ACauldronActor::ACauldronActor()
@@ -43,6 +44,13 @@ void ACauldronActor::OnDropZoneOverlap(UPrimitiveComponent* OverlappedComp, AAct
                                        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
                                        bool bFromSweep, const FHitResult& SweepResult)
 {
+    // Limit ingredients amount to 2
+    if (CurrentIngredients.Num() >= 2)
+    {
+        EjectAgent(OtherActor);
+        return;
+    }
+    
     AIngredientActor* Ingredient = Cast<AIngredientActor>(OtherActor);
     if (Ingredient)
     {
@@ -99,30 +107,41 @@ void ACauldronActor::OnInteract()
         FVector SpawnLoc = GetActorLocation() + FVector(0, 0, 100);
         FActorSpawnParameters Params;
         Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-        // Spawn new ingredient actor
-        // TODO: fix this
-        // AIngredientActor* NewIngredient =
-        //     World->SpawnActorDeferred<AIngredientActor>(
-        //         IngredientClass, FTransform(FRotator::ZeroRotator, SpawnLoc));
-        // if (NewIngredient)
-        // {
-        //     UGameplayStatics::FinishSpawningActor(NewIngredient, FTransform(FRotator::ZeroRotator, SpawnLoc));
-        //     UE_LOG(LogTemp, Warning, TEXT("Spawned via deferred: %s"), *NewIngredient->GetName());
-        // }
-        //
-        // UE_LOG(LogTemp, Warning, TEXT("ejecting ingredient 2"));
-        //
-        // if (!NewIngredient)
-        // {
-        // UE_LOG(LogTemp, Warning, TEXT("Error in creation"));
-        // }
-        // EjectAgent(NewIngredient);
         
         CurrentIngredients.Empty();
         UpdateWaterColor();
     }
 }
+
+FString ACauldronActor::GetStringListOfIngredients() const
+{
+    FString Result = TEXT("");
+
+    if (CurrentIngredients.Num() == 0)
+    {
+        return TEXT("Nothingness");
+    }
+
+    for (int i = 0; i < CurrentIngredients.Num(); ++i)
+    {
+        AIngredientActor* Ingredient = CurrentIngredients[i];
+        if (!Ingredient) continue;
+
+        FString Name = Ingredient->IngredientName.ToString();
+        FString ColorHex = Ingredient->LiquidColor.ToFColorSRGB().ToHex();
+
+        Result += FString::Printf(
+            TEXT("%s"),
+            *Name
+        );
+
+        if (i != CurrentIngredients.Num() - 1)
+            Result += TEXT(", ");
+    }
+
+    return Result;
+}
+
 
 void ACauldronActor::EjectAgent(AActor* ThisActor)
 {
@@ -134,9 +153,10 @@ void ACauldronActor::EjectAgent(AActor* ThisActor)
     FVector LaunchDir = FVector(FMath::FRandRange(-0.3f, 0.3f), FMath::FRandRange(-0.3f, 0.3f), 1.0f);
     LaunchDir.Normalize();
 
-    ThisActor->SetActorLocation(GetActorLocation() + FVector(0,0,50));
+    ThisActor->SetActorLocation(GetActorLocation() + FVector(0,0,200));
     if (UPrimitiveComponent* Comp = Cast<UPrimitiveComponent>(ThisActor->GetRootComponent()))
     {
+        Comp->SetSimulatePhysics(true);
         Comp->AddImpulse(LaunchDir * EjectForce, NAME_None, true);
     }
 }
@@ -162,7 +182,7 @@ void ACauldronActor::MixIngredients()
     }
     CurrentIngredients.Empty();
 
-    const auto* MixingManager = GetDefault<UPotionMixingManager>();
+    const auto* MixingManager = ULoomiUtils::GetMixingManager(this);
     if (!MixingManager)
     {
         UE_LOG(LogTemp, Error, TEXT("MixingManager not found!"));

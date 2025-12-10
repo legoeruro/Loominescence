@@ -2,7 +2,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
-#include "Utils/LoomiUtils.h"
+#include "Utils/ULoomiUtils.h"
 #include "GameFramework/Character.h"
 
 ASpawnerBoxActor::ASpawnerBoxActor()
@@ -50,9 +50,11 @@ void ASpawnerBoxActor::BeginPlay()
 		for (UActorComponent* Comp : PlayerChar->GetComponents())
 		{
 			// Assumes the BPC's name is BPC_InventoryComponent
-			if (Comp && Comp->GetName().Contains(TEXT("BPC_InventoryComponent")))
+			if (Comp && Comp->GetName().Contains(TEXT("BPC_InventoryMiniComponent")))
 			{
 				InventoryComp = Comp;
+				UE_LOG(LogTemp, Warning, TEXT("Found blueprint component"));
+				
 				break;
 			}
 		}
@@ -65,10 +67,11 @@ void ASpawnerBoxActor::UpdateBoxAvailability()
 {
 	if (!InventoryComp)
 		return;
-	int32 outIndex;
-	bool bHasItem = LoomiUtils::FindItemInInventory(InventoryComp, ItemNameToSpawn, outIndex);
+	bool bHasItem = ULoomiUtils::IsElementInInventory(InventoryComp, ItemElementalType);
 	bIsBoxUnavailable = !bHasItem;
-
+	
+	UE_LOG(LogTemp, Warning, TEXT("Is box available %d"), bIsBoxUnavailable);
+	
 	// If no item was found
 	if (!bHasItem)
 	{
